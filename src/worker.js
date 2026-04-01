@@ -28,7 +28,7 @@ async function getProfile(env, playerId) {
       source: 'demo',
       progress: modules.map((module, index) => ({
         moduleSlug: module.slug,
-        completionPercent: index === 0 ? 34 : 0,
+        completionPercent: index === 0 ? 0 : 0,
         status: index <= 1 ? 'available' : 'locked',
         notes: ''
       }))
@@ -115,7 +115,7 @@ export default {
     const { pathname } = url;
 
     if (pathname === '/api/health') {
-      return json({ ok: true, app: env.APP_NAME || 'Peppol Quest', hasD1: Boolean(env.DB) });
+      return json({ ok: true, app: env.APP_NAME || 'Peppol Quest', build: 'PLAYABLE-MEADOW-V2', hasD1: Boolean(env.DB) });
     }
 
     if (pathname === '/api/modules') {
