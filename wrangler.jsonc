@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "peppol-quest",
+  "name": "learningapp",
   "main": "src/worker.js",
   "compatibility_date": "2026-04-01",
   "assets": {
@@ -15,13 +15,7 @@
     {
       "binding": "DB",
       "database_name": "peppol-quest",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
-    }
-  ],
-  "kv_namespaces": [
-    {
-      "binding": "CACHE",
-      "id": "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+      "database_id": "33908a6d-16b6-4c1e-8cd4-378ab5a1eba6"
     }
   ]
 }

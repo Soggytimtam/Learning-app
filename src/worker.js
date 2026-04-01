@@ -20,7 +20,7 @@ async function readBody(request) {
 }
 
 async function getProfile(env, playerId) {
-  if (!env.DB || env.DB.database_id?.includes('REPLACE_WITH')) {
+  if (!env.DB) {
     return {
       playerId,
       displayName: 'Guest Analyst',
@@ -75,7 +75,7 @@ async function getProfile(env, playerId) {
 async function upsertProgress(env, playerId, payload) {
   const now = new Date().toISOString();
 
-  if (!env.DB || env.DB.database_id?.includes('REPLACE_WITH')) {
+  if (!env.DB) {
     return { ok: true, source: 'demo', saved: payload };
   }
 
@@ -115,12 +115,7 @@ export default {
     const { pathname } = url;
 
     if (pathname === '/api/health') {
-      return json({
-        ok: true,
-        app: env.APP_NAME || 'Peppol Quest',
-        hasD1: Boolean(env.DB),
-        hasKV: Boolean(env.CACHE)
-      });
+      return json({ ok: true, app: env.APP_NAME || 'Peppol Quest', hasD1: Boolean(env.DB) });
     }
 
     if (pathname === '/api/modules') {
@@ -135,17 +130,12 @@ export default {
 
     if (profileMatch && request.method === 'POST') {
       const payload = await readBody(request);
-      if (!payload) {
-        return json({ ok: false, error: 'Invalid JSON body' }, { status: 400 });
-      }
+      if (!payload) return json({ ok: false, error: 'Invalid JSON body' }, { status: 400 });
       const result = await upsertProgress(env, decodeURIComponent(profileMatch[1]), payload);
       return json(result, { status: 200 });
     }
 
-    if (env.ASSETS) {
-      return env.ASSETS.fetch(request);
-    }
-
+    if (env.ASSETS) return env.ASSETS.fetch(request);
     return new Response('Not found', { status: 404 });
   }
 };
