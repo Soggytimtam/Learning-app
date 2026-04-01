@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Peppol Quest</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="sky-glow"></div>
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Cloudflare-ready learning RPG</p>
+        <h1>Peppol Quest</h1>
+        <p class="subtitle">
+          A cozy, toy-box style learning world for becoming a Peppol technical business analyst.
+          Inspired by charming adventure maps and miniature villages, but built with original UI and no copied game assets.
+        </p>
+        <div class="hero-actions">
+          <button id="loadProfileBtn" class="primary">Load player profile</button>
+          <button id="saveProgressBtn" class="secondary">Save progress</button>
+        </div>
+      </div>
+      <aside class="hero-card">
+        <h2>Current focus</h2>
+        <p id="focusText">Peppol 101 Meadow</p>
+        <div class="meter">
+          <div id="progressBar" class="meter-fill"></div>
+        </div>
+        <small id="profileSource">Waiting for profile…</small>
+      </aside>
+    </header>
+
+    <main class="layout">
+      <section>
+        <div class="section-heading">
+          <h2>World map</h2>
+          <p>Tap a zone to read the learning outcome, skills, and quest line.</p>
+        </div>
+        <div id="worldMap" class="world-map"></div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="panel">
+          <h3>Technical BA path</h3>
+          <ul id="skillList" class="skill-list"></ul>
+        </div>
+        <div class="panel">
+          <h3>Lore</h3>
+          <div id="loreBlock" class="lore-block"></div>
+        </div>
+        <div class="panel panel--small">
+          <h3>Cloudflare checklist</h3>
+          <ul class="checklist">
+            <li>Bind D1 for player progress</li>
+            <li>Bind KV for caching or session hints</li>
+            <li>Deploy with Wrangler or Git integration</li>
+            <li>Attach your custom domain in Cloudflare</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <dialog id="moduleDialog" class="module-dialog">
+      <article id="moduleDetails"></article>
+      <form method="dialog">
+        <button class="primary">Close</button>
+      </form>
+    </dialog>
+
+    <footer class="footer">
+      <span>Peppol Quest starter build</span>
+      <span>Designed for Cloudflare Workers + original cozy adventure styling</span>
+    </footer>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
