@@ -110,7 +110,10 @@ button:focus-visible, input:focus-visible { outline: 3px solid rgba(111, 120, 21
 .nav-shards { color: #6f5318; font-weight: 700; }
 .app-shell { padding: 1rem clamp(1rem, 4vw, 2.75rem) 2rem; }
 .screen { display: none; }
-.screen.active { display: block; }
+.screen.active { display: block; animation: fadeIn 200ms ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.zone-card.playable.completed-card { border-color: rgba(97, 143, 88, 0.3); }
+.zone-card.playable.completed-card .zone-badge { background: rgba(97, 143, 88, 0.18); color: #3a6b36; }
 .eyebrow {
   margin: 0 0 0.55rem;
   text-transform: uppercase;
@@ -177,7 +180,10 @@ h1 { font-size: clamp(2.6rem, 5vw, 4.4rem); line-height: 0.94; margin-bottom: 1r
   box-shadow: var(--soft-shadow);
   overflow: hidden;
 }
-.zone-card::after { content: ''; position: absolute; width: 120px; height: 120px; right: -20px; bottom: -28px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.8), rgba(255,255,255,0)); }
+.zone-card::after { content: ''; position: absolute; width: 120px; height: 120px; right: -20px; bottom: -28px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.8), rgba(255,255,255,0)); pointer-events: none; }
+.zone-card { transition: transform 180ms ease, box-shadow 180ms ease; cursor: default; }
+.zone-card.playable { cursor: pointer; }
+.zone-card.playable:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(55, 42, 22, 0.16); }
 .zone-card.locked { opacity: 0.76; filter: saturate(0.85); }
 .zone-card-top { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
 .zone-badge { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.35rem 0.7rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; background: rgba(97, 143, 88, 0.12); color: var(--leaf-dark); }
