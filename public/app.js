@@ -402,12 +402,14 @@ function renderHubCards() {
   els.zoneGrid.innerHTML = state.modules.map((module) => {
     const zoneState = state.player.zoneResults[module.slug];
     const playable = Boolean(zoneBlueprints[module.slug]);
+    const completed = zoneState?.completed;
     const statusLabel = zoneStatusLabel(module, zoneState);
     const progress = zoneState ? zoneProgressPercent(zoneState) : 0;
+    const cardClasses = ['zone-card', playable ? 'playable' : 'locked', completed ? 'completed-card' : ''].filter(Boolean).join(' ');
     return `
-      <article class="zone-card ${playable ? '' : 'locked'}" role="listitem">
+      <article class="${cardClasses}" role="listitem" ${playable ? `data-zone-card="${module.slug}"` : ''}>
         <div class="zone-card-top">
-          <span class="zone-badge">${module.type}</span>
+          <span class="zone-badge">${completed ? '✓ ' : ''}${module.type}</span>
           <span class="zone-level">Level ${module.level}</span>
         </div>
         <div>
@@ -421,15 +423,26 @@ function renderHubCards() {
         <div class="zone-card-actions">
           <span class="zone-status">${statusLabel}${playable ? ` · ${progress}%` : ''}</span>
           <button class="${playable ? 'primary' : 'secondary'} small" data-zone-open="${module.slug}" ${playable ? '' : 'disabled'}>
-            ${zoneState?.completed ? 'Replay zone' : playable ? 'Enter zone' : 'Coming later'}
+            ${completed ? 'Replay zone' : playable ? 'Enter zone' : 'Coming later'}
           </button>
         </div>
       </article>
     `;
   }).join('');
 
-  els.zoneGrid.querySelectorAll('[data-zone-open]').forEach((button) => {
-    button.addEventListener('click', () => openZone(button.dataset.zoneOpen));
+  // Make entire playable card clickable, plus individual button
+  els.zoneGrid.querySelectorAll('[data-zone-card]').forEach((card) => {
+    card.addEventListener('click', (e) => {
+      // Don't double-fire if user clicked the button directly
+      if (e.target.closest('[data-zone-open]')) return;
+      openZone(card.dataset.zoneCard);
+    });
+  });
+  els.zoneGrid.querySelectorAll('[data-zone-open]:not([disabled])').forEach((button) => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openZone(button.dataset.zoneOpen);
+    });
   });
 }
 
@@ -608,11 +621,11 @@ function nearbyActor(zoneState, blueprint) {
 }
 
 function tileMarker(zoneState, blueprint, x, y) {
-  if (zoneState.player.x === x && zoneState.player.y === y) return '<div class="marker player">Y</div>';
+  if (zoneState.player.x === x && zoneState.player.y === y) return '<div class="marker player">You</div>';
   for (const actor of Object.values(blueprint.actors)) {
     if (actor.x === x && actor.y === y) return `<div class="marker npc">${actor.icon}</div>`;
   }
-  if (x === 6 && y === 7 && zoneState.completed) return '<div class="marker goal">✓</div>';
+  if (x === 6 && y === 7) return `<div class="marker goal">${zoneState.completed ? '✓' : '★'}</div>`;
   return '';
 }
 
@@ -835,10 +848,18 @@ function attachEvents() {
       if (button.dataset.nav === 'skills') renderSkillTree();
     });
   });
-  els.resumeQuestBtn.addEventListener('click', () => openZone(state.player.currentZone));
-  els.resetAllBtn.addEventListener('click', resetAllProgress);
+  els.resumeQuestBtn.addEventListener('click', () => {
+    // Find the first incomplete playable zone, or fall back to current
+    const nextZone = Object.keys(zoneBlueprints).find((key) => !state.player.zoneResults[key]?.completed) || state.player.currentZone;
+    openZone(nextZone);
+  });
+  els.resetAllBtn.addEventListener('click', () => {
+    if (confirm('Reset all progress? This will clear your completed zones and shards.')) resetAllProgress();
+  });
   els.backToMap.addEventListener('click', () => { hideCompletion(); showScreen('hub'); renderHub(); });
-  els.resetZoneBtn.addEventListener('click', () => resetZone());
+  els.resetZoneBtn.addEventListener('click', () => {
+    if (confirm('Reset this zone? Your shards and quest progress will be cleared.')) resetZone();
+  });
   els.saveZoneBtn.addEventListener('click', saveProfile);
   els.completionContinue.addEventListener('click', () => { hideCompletion(); showScreen('hub'); renderHub(); });
   els.glossarySearch.addEventListener('input', (event) => { state.glossaryQuery = event.target.value; renderGlossary(); });
