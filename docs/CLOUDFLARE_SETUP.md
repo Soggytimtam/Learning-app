@@ -28,8 +28,6 @@ npx wrangler login
 npx wrangler d1 create peppol-quest
 ```
 
-Copy the returned `database_id` into `wrangler.jsonc`.
-
 ## 4. Apply the schema
 
 ```bash

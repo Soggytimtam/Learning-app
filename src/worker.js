@@ -28,8 +28,8 @@ async function getProfile(env, playerId) {
       source: 'demo',
       progress: modules.map((module, index) => ({
         moduleSlug: module.slug,
-        completionPercent: index === 0 ? 34 : 0,
-        status: index <= 1 ? 'available' : 'locked',
+        completionPercent: index < 2 ? 0 : 0,
+        status: index < 2 ? 'available' : 'locked',
         notes: ''
       }))
     };
@@ -65,8 +65,8 @@ async function getProfile(env, playerId) {
         }))
       : modules.map((module, index) => ({
           moduleSlug: module.slug,
-          completionPercent: index === 0 ? 0 : 0,
-          status: index === 0 ? 'available' : 'locked',
+          completionPercent: 0,
+          status: index < 2 ? 'available' : 'locked',
           notes: ''
         }))
   };
@@ -115,7 +115,12 @@ export default {
     const { pathname } = url;
 
     if (pathname === '/api/health') {
-      return json({ ok: true, app: env.APP_NAME || 'Peppol Quest', hasD1: Boolean(env.DB) });
+      return json({
+        ok: true,
+        app: env.APP_NAME || 'Peppol Quest',
+        build: 'WORLD-HUB-V1',
+        hasD1: Boolean(env.DB)
+      });
     }
 
     if (pathname === '/api/modules') {
@@ -123,6 +128,7 @@ export default {
     }
 
     const profileMatch = pathname.match(/^\/api\/profile\/([^/]+)$/);
+
     if (profileMatch && request.method === 'GET') {
       const profile = await getProfile(env, decodeURIComponent(profileMatch[1]));
       return json(profile);
@@ -130,12 +136,17 @@ export default {
 
     if (profileMatch && request.method === 'POST') {
       const payload = await readBody(request);
-      if (!payload) return json({ ok: false, error: 'Invalid JSON body' }, { status: 400 });
+      if (!payload) {
+        return json({ ok: false, error: 'Invalid JSON body' }, { status: 400 });
+      }
       const result = await upsertProgress(env, decodeURIComponent(profileMatch[1]), payload);
       return json(result, { status: 200 });
     }
 
-    if (env.ASSETS) return env.ASSETS.fetch(request);
+    if (env.ASSETS) {
+      return env.ASSETS.fetch(request);
+    }
+
     return new Response('Not found', { status: 404 });
   }
 };

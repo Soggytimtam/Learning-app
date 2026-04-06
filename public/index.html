@@ -3,73 +3,230 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Peppol Quest</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <title>Peppol Quest — Learn eInvoicing through Adventure</title>
+    <meta
+      name="description"
+      content="An interactive RPG learning world for Peppol, PINT A-NZ, and eInvoicing. Designed for business analysts and technical consultants in Australia and New Zealand."
+    />
+    <link rel="stylesheet" href="/styles.css?v=world-hub-v1" />
   </head>
   <body>
-    <div class="sky-glow"></div>
-    <header class="hero shell-card">
-      <div>
-        <p class="eyebrow">Playable prototype · Peppol 101 Meadow</p>
-        <h1>Peppol Quest</h1>
-        <p class="subtitle">
-          Move around the meadow, talk to townsfolk, collect clues, and solve your first Peppol business analyst quest.
-        </p>
-        <div class="hero-actions">
-          <button id="resetGameBtn" class="secondary">Reset quest</button>
-          <button id="saveProgressBtn" class="primary">Save progress</button>
-        </div>
-      </div>
-      <aside class="hero-card shell-card">
-        <h2>Current quest</h2>
-        <p id="questTitle">Loading…</p>
-        <div class="meter"><div id="progressBar" class="meter-fill"></div></div>
-        <small id="profileSource">Checking profile…</small>
-      </aside>
-    </header>
+    <div class="sky-glow" aria-hidden="true"></div>
 
-    <main class="layout">
-      <section class="shell-card game-panel">
-        <div class="panel-head">
-          <div>
-            <h2>Meadow map</h2>
-            <p>Use arrow keys or WASD to move. Press <strong>E</strong> or click nearby characters to interact.</p>
+    <nav class="main-nav" aria-label="Main navigation">
+      <button class="nav-logo" data-nav="hub" aria-label="Peppol Quest home">
+        <span class="logo-glyph" aria-hidden="true">⚡</span>
+        <span class="logo-name">Peppol Quest</span>
+      </button>
+
+      <div class="nav-links" role="tablist" aria-label="Primary sections">
+        <button class="nav-btn active" data-nav="hub" role="tab" aria-selected="true">World Map</button>
+        <button class="nav-btn" data-nav="glossary" role="tab" aria-selected="false">Glossary</button>
+        <button class="nav-btn" data-nav="skills" role="tab" aria-selected="false">Skills</button>
+      </div>
+
+      <div class="nav-profile" aria-live="polite">
+        <span class="nav-rank" id="navRank">Apprentice</span>
+        <span class="nav-shards">✦ <span id="navShards">0</span></span>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <section id="screen-hub" class="screen active" aria-label="World map">
+        <header class="hub-hero shell-card">
+          <div class="hub-hero-copy">
+            <p class="eyebrow">Your eInvoicing Adventure Begins</p>
+            <h1>Peppol Quest</h1>
+            <p class="subtitle">
+              A playful learning world for understanding Peppol, PINT A-NZ, and technical
+              business analysis. Explore zones, talk to guides, collect knowledge shards, and
+              practise how a real BA thinks through delivery problems.
+            </p>
+
+            <div class="track-pill-row" aria-label="Learning tracks">
+              <span class="track-pill ba">Business Analyst</span>
+              <span class="track-pill tech">Technical BA</span>
+              <span class="track-pill anz">A-NZ Specialist</span>
+              <span class="track-pill strat">Strategy</span>
+            </div>
+
+            <div class="hero-actions">
+              <button class="primary" id="resumeQuestBtn">Resume latest zone</button>
+              <button class="secondary" id="resetAllBtn">Reset all progress</button>
+            </div>
           </div>
-          <div class="legend">
-            <span><i class="swatch player"></i>You</span>
-            <span><i class="swatch npc"></i>NPC</span>
-            <span><i class="swatch clue"></i>Clue</span>
-            <span><i class="swatch gate"></i>Goal</span>
+
+          <div class="hub-hero-visual" aria-hidden="true">
+            <div class="world-orb">
+              <div class="orb-land"></div>
+              <div class="orb-path"></div>
+              <div class="orb-sparkle s1"></div>
+              <div class="orb-sparkle s2"></div>
+              <div class="orb-sparkle s3"></div>
+            </div>
           </div>
-        </div>
-        <div id="gameGrid" class="game-grid" aria-label="Playable map"></div>
+        </header>
+
+        <section class="world-zones-section">
+          <div class="section-heading">
+            <h2>Choose Your Zone</h2>
+            <p class="section-sub">
+              Two zones are fully playable now, with additional zones visible on the roadmap so
+              the world feels like a real learning journey.
+            </p>
+          </div>
+          <div id="zoneGrid" class="zone-grid" role="list"></div>
+        </section>
+
+        <section class="hub-bottom">
+          <article class="word-of-day shell-card" id="wordOfDay" aria-live="polite"></article>
+          <article class="hub-tip shell-card">
+            <p class="tip-label">Tip for BAs</p>
+            <p id="hubTip"></p>
+          </article>
+          <article class="shell-card status-card">
+            <h3>Profile status</h3>
+            <ul class="status-list">
+              <li><span>Analyst rank</span><strong id="rankLabel">Apprentice</strong></li>
+              <li><span>Zones completed</span><strong id="zoneCompletionLabel">0 / 2</strong></li>
+              <li><span>Profile source</span><strong id="profileSource">Checking…</strong></li>
+            </ul>
+          </article>
+        </section>
       </section>
 
-      <aside class="sidebar">
-        <section class="shell-card panel">
-          <h3>Status</h3>
-          <ul class="status-list">
-            <li><span>Analyst rank</span><strong id="rankLabel">Apprentice</strong></li>
-            <li><span>Knowledge shards</span><strong id="shardCount">0 / 3</strong></li>
-            <li><span>Last lesson</span><strong id="lessonLabel">None yet</strong></li>
-          </ul>
-        </section>
+      <section id="screen-zone" class="screen" aria-label="Zone game">
+        <div class="zone-topbar shell-card">
+          <button class="back-btn" id="backToMap" aria-label="Return to world map">← World Map</button>
 
-        <section class="shell-card panel">
-          <h3>Dialogue</h3>
-          <div id="dialoguePanel" class="dialogue-panel">
-            <p>Walk over to Mayor Myrtle and press <strong>E</strong> to begin.</p>
+          <div class="zone-topbar-title">
+            <p class="eyebrow" id="zoneEyebrow">Zone</p>
+            <p class="zone-topbar-name" id="zoneTopbarName">Loading zone…</p>
           </div>
-          <div id="choicePanel" class="choice-panel"></div>
-        </section>
 
-        <section class="shell-card panel">
-          <h3>Quest log</h3>
-          <ol id="questSteps" class="quest-steps"></ol>
-        </section>
-      </aside>
+          <div class="zone-topbar-actions">
+            <button class="secondary small" id="resetZoneBtn">Reset</button>
+            <button class="primary small" id="saveZoneBtn">Save</button>
+          </div>
+        </div>
+
+        <div class="progress-strip shell-card">
+          <span class="progress-quest-text" id="currentQuestText">Loading…</span>
+          <div
+            class="meter"
+            role="progressbar"
+            aria-label="Quest progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            id="zoneProgressMeter"
+          >
+            <div class="meter-fill" id="progressFill"></div>
+          </div>
+          <span class="progress-rank" id="zoneRankLabel">Apprentice</span>
+          <span class="progress-shards" aria-label="Knowledge shards">✦ <span id="shardCount">0</span></span>
+        </div>
+
+        <div class="game-layout">
+          <section class="shell-card game-panel" aria-label="Zone map">
+            <div class="game-panel-header">
+              <div>
+                <h2 id="mapHeading">Zone map</h2>
+                <p>Use arrow keys or WASD to move. Press <kbd>E</kbd> or click an adjacent NPC.</p>
+              </div>
+
+              <div class="legend" aria-label="Map legend">
+                <span><i class="swatch player" aria-hidden="true"></i>You</span>
+                <span><i class="swatch npc" aria-hidden="true"></i>Guide</span>
+                <span><i class="swatch clue" aria-hidden="true"></i>Shard</span>
+                <span><i class="swatch goal" aria-hidden="true"></i>Goal</span>
+              </div>
+            </div>
+
+            <div id="gameGrid" class="game-grid" role="grid" aria-label="Playable zone grid"></div>
+          </section>
+
+          <aside class="game-sidebar" aria-label="Quest sidebar">
+            <section class="shell-card dialogue-card">
+              <div class="npc-header" id="npcHeader" aria-hidden="true">
+                <div class="npc-avatar" id="npcAvatar">✦</div>
+                <div class="npc-title-block">
+                  <p class="npc-name" id="npcName">Dialogue</p>
+                  <p class="npc-role" id="npcRole"></p>
+                </div>
+              </div>
+
+              <div class="dialogue-panel" id="dialoguePanel">
+                <p>Walk to an NPC and press <strong>E</strong> to begin your quest.</p>
+              </div>
+
+              <div class="choice-panel" id="choicePanel"></div>
+            </section>
+
+            <section class="shell-card quest-card">
+              <h3>Quest Log</h3>
+              <ol class="quest-steps" id="questSteps"></ol>
+              <p class="profile-source zone-source" id="zoneProfileSource"></p>
+            </section>
+
+            <section class="shell-card shards-card" id="shardsCard">
+              <h3>Knowledge Shards</h3>
+              <div class="shard-list" id="shardList"></div>
+            </section>
+          </aside>
+        </div>
+
+        <div class="completion-overlay" id="completionOverlay" hidden aria-live="assertive">
+          <div class="completion-card shell-card">
+            <div class="completion-icon" aria-hidden="true">✦</div>
+            <h2 id="completionTitle">Zone complete!</h2>
+            <p id="completionText"></p>
+            <div class="completion-badges" id="completionBadges"></div>
+            <button class="primary" id="completionContinue">Return to World Map</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-glossary" class="screen" aria-label="Glossary codex">
+        <div class="screen-header">
+          <h1>Glossary Codex</h1>
+          <p>
+            Plain-English explanations for the terms you meet on your quest. Change the lens to
+            switch between beginner, technical, and BA-focused explanations.
+          </p>
+        </div>
+
+        <div class="glossary-controls shell-card">
+          <input
+            type="search"
+            id="glossarySearch"
+            class="search-input"
+            placeholder="Search terms, e.g. SMP, PINT, AS4…"
+            aria-label="Search glossary"
+          />
+
+          <div class="view-toggle" role="radiogroup" aria-label="Definition depth">
+            <button class="view-btn active" data-view="plain" role="radio" aria-checked="true">Plain English</button>
+            <button class="view-btn" data-view="technical" role="radio" aria-checked="false">Technical</button>
+            <button class="view-btn" data-view="ba" role="radio" aria-checked="false">BA Lens</button>
+          </div>
+        </div>
+
+        <div id="glossaryGrid" class="glossary-grid" role="list"></div>
+      </section>
+
+      <section id="screen-skills" class="screen" aria-label="Skill tree">
+        <div class="screen-header">
+          <h1>Skill Tree</h1>
+          <p>
+            Four analyst pathways. Completing zones unlocks nodes and shows the real work skill
+            each lesson builds.
+          </p>
+        </div>
+        <div id="skillTree" class="skill-tree"></div>
+      </section>
     </main>
 
-    <script type="module" src="/app.js"></script>
+    <script type="module" src="/app.js?v=world-hub-v1"></script>
   </body>
 </html>
